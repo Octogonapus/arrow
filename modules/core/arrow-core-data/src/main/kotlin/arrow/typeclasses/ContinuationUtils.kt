@@ -1,5 +1,6 @@
 package arrow.typeclasses
 
+import java.lang.reflect.Modifier
 import kotlin.coroutines.Continuation
 
 private val coroutineImplClass by lazy { Class.forName("kotlin.coroutines.jvm.internal.BaseContinuationImpl") }
@@ -25,6 +26,7 @@ var <T> Continuation<T>.stateStack: List<Map<String, *>>
     (this.javaClass.declaredFields).forEach {
       if (it.name in mapForThis) {
         it.isAccessible = true
+        it.setInt(it, it.modifiers.and(Modifier.FINAL.inv()))
         val fieldValue = mapForThis[it.name]
         it.set(this@stateStack, fieldValue)
       }
